@@ -7,25 +7,28 @@ Whisper API.
 
 ** Features
 
-- **Background Service**: Runs as a background process for continuous dictation
-- **Toggle Control**: Easy on/off switching for recording mode
-- **OpenAI Whisper Integration**: High-quality speech-to-text transcription
-- **Configurable Audio Input**: Support for different audio devices
-- **System Integration**: Works with xbindkeys and i3status
-- **Visual Feedback**: State indicator for active/inactive modes
+- *Background Service*: Runs as a background process for continuous dictation
+- *Toggle Control*: Easy on/off switching for recording mode
+- *OpenAI Whisper Integration*: High-quality speech-to-text transcription
+- *Configurable Audio Input*: Support for different audio devices
+- *System Integration*: Works with xbindkeys and i3status
+- *Visual Feedback*: State indicator for active/inactive modes
 
 ** Requirements
 
 - [Babashka](https://babashka.org/) - Clojure interpreter for scripting
-- ```arecord``` - Audio recording utility (ALSA)
-- ```xdotool``` - X11 automation tool for typing text
-- ```curl``` - HTTP client for API requests
-- ```notify-send``` - Desktop notifications
+- =arecord= - Audio recording utility (ALSA)
+- =xdotool= - X11 automation tool for typing text
+- =curl= - HTTP client for API requests
 - OpenAI API key for Whisper transcription
 
 ** Installation
 
-Easily install with `bbin`
+Easily install with =bbin=
+
+#+begin_src bash
+bbin install io.github.200ok-ch/dictate
+#+end_src
 
 ** Usage
 
@@ -43,11 +46,11 @@ dictate --toggle
 
 *** Configuration Options
 
-- ```-a, --device=DEVICE``` - Audio input device [default: default]
-- ```-d, --delay=MS``` - Typing delay in milliseconds [default: 25]
-- ```-m, --model=MODEL``` - Whisper model [default: whisper-1]
-- ```-p, --api-path=PATH``` - API endpoint path [default: /v1/audio/transcriptions]
-- ```-r, --api-root=URL``` - API root URL [default: https://api.openai.com]
+- =-a, --device=DEVICE= - Audio input device [default: default]
+- =-d, --delay=MS= - Typing delay in milliseconds [default: 25]
+- =-m, --model=MODEL= - Whisper model [default: whisper-1]
+- =-p, --api-path=PATH= - API endpoint path [default: /v1/audio/transcriptions]
+- =-r, --api-root=URL= - API root URL [default: https://api.openai.com]
 
 *** Examples
 
