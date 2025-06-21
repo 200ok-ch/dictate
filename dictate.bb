@@ -108,6 +108,12 @@ See the README for more details: https://github.com/200ok-ch/dictate
                                 "silence" "1" "0.1" "1%" "1" "2.0" "1%"
                                 "trim" "0" "60")]  ; Max 1 minute per segment
             ;; Wait for the recording process to complete (silence detected or max time reached)
+            (while (and (= (read-state) :active)
+                        (p/alive? rproc))
+              (Thread/sleep 250))
+            ;; if the process is still running at this point we need to kill it
+            (when (p/alive? rproc)
+              (p/destroy rproc))
             (deref rproc))
 
           (println "Recording segment complete.")
