@@ -1,0 +1,3 @@
+{:paths ["."]
+ :deps {io.github.200ok-ch/shell-smith
+        {:git/sha "1ae2822a55d493774c48df25c9d00aaab251beec"}}}
