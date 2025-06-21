@@ -1,4 +1,4 @@
-* Dictate
+* Dictate 🔴
 
 A background speech-to-text dictation tool written in Clojure using
 Babashka. This tool provides seamless voice-to-text functionality by
