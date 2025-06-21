@@ -26,6 +26,9 @@ Options:
   -r --api-root=<api-root>  API root [default: https://api.openai.com]
   -s --service              Run as background service process
   -t --toggle               Toggle the recording mode (active/inactive)
+  -v --volume=<colume>      Maximum volume of silence in percentage [default: 2]
+  -t --duration=<duration>  Minimum duration of silence in secs [default: 1.5]
+  -e --emojis               Enable emoji support.
 
 Examples:
   dictate --service                   Start service with default device
@@ -94,7 +97,24 @@ See the README for more details: https://github.com/200ok-ch/dictate
   (when-not (str/blank? text)
     (p/shell "xdotool" "type" "--delay" (str delay) text)))
 
-(defn recording-loop [{:keys [device] :as config}]
+(defn type-soft-newline []
+  (p/shell "xdotool" "key" "shift+Return"))
+
+(def emojis
+  (->> (json/parse-string (slurp "emojis.min.json") true)
+       :emojis
+       (sort-by (comp count :name))
+       reverse
+       (map (fn [{:keys [name emoji]}]
+              [(re-pattern (str "(?i)emoji " name)) emoji]))))
+
+(defn apply-emojis [text]
+  (-> (fn [text [pat emoji]] (str/replace text pat emoji))
+      (reduce text emojis)
+      ;; replace the remaining occurences of "emoji" with a warning sign
+      (str/replace #"(?i)emoji" "⚠️")))
+
+(defn recording-loop [{:keys [device volume duration emojis] :as config}]
   "Main recording loop that runs while service is active with continuous recording"
   (println "Dictate service started. Press Ctrl+C to stop or use --toggle to control.")
   (while true
@@ -104,9 +124,11 @@ See the README for more details: https://github.com/200ok-ch/dictate
           (println "Recording segment...")
           ;; Use rec (sox) with silence detection
           (let [rproc (p/process {:continue true}
-                                "rec" "-q" temp-file
-                                "silence" "1" "0.1" "1%" "1" "2.0" "1%"
-                                "trim" "0" "60")]  ; Max 1 minute per segment
+                                 "rec" "-q" temp-file
+                                 "silence" "1" "0.1"
+                                 (str volume "%") "1"
+                                 (str duration) "1%"
+                                 "trim" "0" "60")]  ; Max 1 minute per segment
             ;; Wait for the recording process to complete (silence detected or max time reached)
             (while (and (= (read-state) :active)
                         (p/alive? rproc))
@@ -119,9 +141,14 @@ See the README for more details: https://github.com/200ok-ch/dictate
           (println "Recording segment complete.")
           (when (fs/exists? temp-file)
             (println "Transcribing...")
-            (when-let [text (transcribe-audio config temp-file)]
-              (println "Typing:" text)
-              (type-text config text)))
+            (if-let [text (transcribe-audio config temp-file)]
+              (let [text-with-emojis (if emojis (apply-emojis text) text)]
+                (println "Typing:" text-with-emojis)
+                (type-text config text-with-emojis)
+                (when (= (read-state) :active)
+                  (type-soft-newline)
+                  (type-soft-newline)))
+              (println "No text.")))
 
           (catch Exception e
             (println "Error in recording loop:" (.getMessage e) e))
