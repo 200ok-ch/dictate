@@ -1,9 +1,12 @@
 * Dictate 🔴
 
 A background speech-to-text dictation tool written in Clojure using
-Babashka. This tool provides seamless voice-to-text functionality by
+Babashka. This tool provides seamless speech-to-text functionality by
 recording audio in the background and transcribing it using OpenAI's
 Whisper API.
+
+Dictate now supports continuous recording with automatic silence
+detection, providing a seamless hands-free dictation experience.
 
 ** Features
 
@@ -17,7 +20,7 @@ Whisper API.
 ** Requirements
 
 - [[https://babashka.org/][Babashka]] - Clojure interpreter for scripting
-- =arecord= - Audio recording utility (ALSA)
+- =sox= - Swiss Army Knife of sound processing utilities
 - =xdotool= - X11 automation tool for typing text
 - =curl= - HTTP client for API requests
 - OpenAI API key for Whisper transcription

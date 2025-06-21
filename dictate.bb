@@ -32,26 +32,8 @@ Examples:
   dictate --service --device=hw:1,0   Start service with specific device
   dictate --toggle                    Toggle recording on/off
 
-Notes:
-
-This snippet is a suggestion for your xbindkeys configuration.
-
-\"dictate --toggle\"
-  Pause
-
-This snippet is a suggestion for your i3status configuration.
-
-order += \"read_file dictate\"
-read_file dictate {
-  path = \"/home/phil/.dictate.state\"
-  format = \"%content\"
-}
+See the README for more details: https://github.com/200ok-ch/dictate
 ")
-
-;; Similar/Related Projects:
-;; - https://github.com/yohasebe/whisper-stream
-;; - https://github.com/igorpejic/linux-speech-to-text
-;; - https://github.com/200ok-ch/ok-audio-transcription
 
 (def indicator "🔴")
 
@@ -113,26 +95,28 @@ read_file dictate {
     (p/shell "xdotool" "type" "--delay" (str delay) text)))
 
 (defn recording-loop [{:keys [device] :as config}]
-  "Main recording loop that runs while service is active"
+  "Main recording loop that runs while service is active with continuous recording"
   (println "Dictate service started. Press Ctrl+C to stop or use --toggle to control.")
   (while true
     (when (= (read-state) :active)
       (let [temp-file (str "/tmp/dictate-" (System/currentTimeMillis) ".wav")]
         (try
-          (println "Recording...")
-          (let [rproc (record-audio-cmd device temp-file)]
-            ;; block until finished recording
-            (while (= (read-state) :active)
-              (Thread/sleep 500))
-            (p/destroy rproc)
+          (println "Recording segment...")
+          ;; Use rec (sox) with silence detection
+          (let [rproc (p/process {:continue true}
+                                "rec" "-q" temp-file
+                                "silence" "1" "0.1" "1%" "1" "2.0" "1%"
+                                "trim" "0" "60")]  ; Max 1 minute per segment
+            ;; Wait for the recording process to complete (silence detected or max time reached)
             (deref rproc))
-          (println "Recording complete.")
 
+          (println "Recording segment complete.")
           (when (fs/exists? temp-file)
             (println "Transcribing...")
             (when-let [text (transcribe-audio config temp-file)]
               (println "Typing:" text)
               (type-text config text)))
+
           (catch Exception e
             (println "Error in recording loop:" (.getMessage e) e))
           (finally
