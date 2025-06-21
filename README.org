@@ -1,0 +1,112 @@
+* Dictate
+
+A background speech-to-text dictation tool written in Clojure using
+Babashka. This tool provides seamless voice-to-text functionality by
+recording audio in the background and transcribing it using OpenAI's
+Whisper API.
+
+** Features
+
+- **Background Service**: Runs as a background process for continuous dictation
+- **Toggle Control**: Easy on/off switching for recording mode
+- **OpenAI Whisper Integration**: High-quality speech-to-text transcription
+- **Configurable Audio Input**: Support for different audio devices
+- **System Integration**: Works with xbindkeys and i3status
+- **Visual Feedback**: State indicator for active/inactive modes
+
+** Requirements
+
+- [Babashka](https://babashka.org/) - Clojure interpreter for scripting
+- ```arecord``` - Audio recording utility (ALSA)
+- ```xdotool``` - X11 automation tool for typing text
+- ```curl``` - HTTP client for API requests
+- ```notify-send``` - Desktop notifications
+- OpenAI API key for Whisper transcription
+
+** Installation
+
+Easily install with `bbin`
+
+** Usage
+
+*** Basic Commands
+
+#+begin_src bash
+# Start the background service
+dictate --service
+
+# Toggle recording on/off
+dictate --toggle
+
+# Show help
+#+end_src
+
+*** Configuration Options
+
+- ```-a, --device=DEVICE``` - Audio input device [default: default]
+- ```-d, --delay=MS``` - Typing delay in milliseconds [default: 25]
+- ```-m, --model=MODEL``` - Whisper model [default: whisper-1]
+- ```-p, --api-path=PATH``` - API endpoint path [default: /v1/audio/transcriptions]
+- ```-r, --api-root=URL``` - API root URL [default: https://api.openai.com]
+
+*** Examples
+
+#+begin_src bash
+# Start service with default settings
+dictate --service
+
+# Start service with specific audio device
+dictate --service --device=hw:1,0
+
+# Toggle recording mode
+dictate --toggle
+#+end_src
+
+** System Integration
+
+*** xbindkeys Configuration
+
+Add this to your =~/.xbindkeysrc= for keyboard shortcuts:
+
+#+begin_src
+"dictate --toggle"
+  Pause
+#+end_src
+
+*** i3status Configuration
+
+Add this to your i3status config for status bar integration:
+
+#+begin_src
+order += "read_file dictate"
+
+read_file dictate {
+    path = "~/.dictate.state"
+    format = "%content"
+}
+#+end_src
+
+** State Management
+
+The tool uses a simple state file (=~/.dictate.state=) to track
+whether recording is active or inactive:
+
+- Active state: Contains the 🔴 indicator
+- Inactive state: Empty file
+
+** Similar Projects
+
+- [whisper-stream](https://github.com/yohasebe/whisper-stream)
+- [linux-speech-to-text](https://github.com/igorpejic/linux-speech-to-text)
+- [ok-audio-transcription](https://github.com/200ok-ch/ok-audio-transcription)
+- [nerd-dictation](https://github.com/ideasman42/nerd-dictation)
+
+** Future Improvements
+
+The code includes a TODO for implementing SOX with silence detection
+to automatically split recordings into multiple files for more
+efficient processing.
+
+** License
+
+This project is maintained by [200ok GmbH](https://200ok.ch/).

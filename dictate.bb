@@ -158,7 +158,10 @@ read_file dictate {
         new-state (if (= current-state :active) :inactive :active)]
     (write-state! new-state)
     (println (str "Dictate mode: " (name new-state)))
-    (notify-cmd (str "Mode: " (name new-state) (when (#{:active} new-state) (str " " indicator))))))
+    ;; force update i3status for the instant red bubble
+    (p/shell "killall -USR1 i3status")
+    ;;(notify-cmd (str "Mode: " (name new-state) (when (#{:active} new-state) (str " " indicator))))
+    ))
 
 (defn main [args]
   (let [config (smith/config usage)]
