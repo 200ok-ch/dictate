@@ -16,7 +16,7 @@ Whisper API.
 
 ** Requirements
 
-- [Babashka](https://babashka.org/) - Clojure interpreter for scripting
+- [[https://babashka.org/][Babashka]] - Clojure interpreter for scripting
 - =arecord= - Audio recording utility (ALSA)
 - =xdotool= - X11 automation tool for typing text
 - =curl= - HTTP client for API requests
@@ -99,10 +99,10 @@ whether recording is active or inactive:
 
 ** Similar Projects
 
-- [whisper-stream](https://github.com/yohasebe/whisper-stream)
-- [linux-speech-to-text](https://github.com/igorpejic/linux-speech-to-text)
-- [ok-audio-transcription](https://github.com/200ok-ch/ok-audio-transcription)
-- [nerd-dictation](https://github.com/ideasman42/nerd-dictation)
+- [[https://github.com/yohasebe/whisper-stream][whisper-stream]]
+- [[https://github.com/igorpejic/linux-speech-to-text][linux-speech-to-text]]
+- [[https://github.com/200ok-ch/ok-audio-transcription][ok-audio-transcription]]
+- [[https://github.com/ideasman42/nerd-dictation][nerd-dictation]]
 
 ** Future Improvements
 
@@ -112,4 +112,4 @@ efficient processing.
 
 ** License
 
-This project is maintained by [200ok GmbH](https://200ok.ch/).
+This project is maintained by [[https://200ok.ch/][200ok GmbH]].
