@@ -24,7 +24,7 @@ Whisper API.
 
 ** Installation
 
-Easily install with =bbin=
+Easily install with [[https://github.com/babashka/bbin][bbin]]
 
 #+begin_src bash
 bbin install io.github.200ok-ch/dictate
