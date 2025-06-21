@@ -100,18 +100,13 @@ whether recording is active or inactive:
 - Active state: Contains the 🔴 indicator
 - Inactive state: Empty file
 
-** Similar Projects
+** Similar Projects & Acknowledgements
 
 - [[https://github.com/yohasebe/whisper-stream][whisper-stream]]
 - [[https://github.com/igorpejic/linux-speech-to-text][linux-speech-to-text]]
 - [[https://github.com/200ok-ch/ok-audio-transcription][ok-audio-transcription]]
 - [[https://github.com/ideasman42/nerd-dictation][nerd-dictation]]
-
-** Future Improvements
-
-The code includes a TODO for implementing SOX with silence detection
-to automatically split recordings into multiple files for more
-efficient processing.
+- [[https://github.com/chalda-pnuzig/emojis.json][emojis.json]]
 
 ** License
 
