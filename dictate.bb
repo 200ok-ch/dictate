@@ -29,6 +29,7 @@ Options:
   -v --volume=<colume>      Maximum volume of silence in percentage [default: 2]
   -t --duration=<duration>  Minimum duration of silence in secs [default: 1.5]
   -e --emojis               Enable emoji support.
+  -k --kill-i3status        Kill i3status when toggling (configurable via dictate.yml)
 
 Examples:
   dictate --service                   Start service with default device
@@ -169,14 +170,15 @@ See the README for more details: https://github.com/200ok-ch/dictate
   ;; Start recording loop
   (recording-loop config))
 
-(defn toggle-mode! []
+(defn toggle-mode! [config]
   "Toggle between active and inactive recording modes"
   (let [current-state (read-state)
         new-state (if (= current-state :active) :inactive :active)]
     (write-state! new-state)
     (println (str "Dictate mode: " (name new-state)))
-    ;; force update i3status for the instant red bubble
-    (p/shell "killall -USR1 i3status")
+    ;; force update i3status for the instant red bubble (if configured)
+    (when (:kill-i3status config)
+      (p/shell "killall -USR1 i3status"))
     ;;(notify-cmd (str "Mode: " (name new-state) (when (#{:active} new-state) (str " " indicator))))
     ))
 
@@ -187,7 +189,7 @@ See the README for more details: https://github.com/200ok-ch/dictate
       (start-service! config)
 
       (:toggle config)
-      (toggle-mode!)
+      (toggle-mode! config)
 
       :else
       (println usage))))

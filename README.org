@@ -111,3 +111,20 @@ whether recording is active or inactive:
 ** License
 
 This project is maintained by [[https://200ok.ch/][200ok GmbH]].
+
+** Configuration
+
+You can customize Dictate's behavior by creating a =dictate.yml=
+configuration file in the *SAME* directory where you call =dictate=.
+
+Example:
+
+#+begin_src yaml
+api-key: "sk-..."                    # Your OpenAI API key
+device: "default"                    # Audio input device (e.g., "default", "hw:1,0")
+delay: 5                             # Typing delay in milliseconds
+model: "gpt-4o-transcribe"           # Whisper model to use
+api-path: "/v1/audio/transcriptions" # API endpoint path
+api-root: "https://api.openai.com"   # API root URL
+kill-i3status: false                 # Whether to kill i3status during dictation
+#+end_src
