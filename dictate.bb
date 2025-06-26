@@ -124,7 +124,7 @@ See the README for more details: https://github.com/200ok-ch/dictate
       (let [temp-file (str "/tmp/dictate-" (System/currentTimeMillis) ".wav")]
         (try
           (println "Recording segment...")
-          ;; Use rec (sox) with silence detection
+          ;; TODO: respect device
           (let [rproc (p/process {:continue true}
                                  "rec" "-q" temp-file
                                  "silence" "1" "0.1"
@@ -140,17 +140,18 @@ See the README for more details: https://github.com/200ok-ch/dictate
               (p/destroy rproc))
             (deref rproc))
 
-          (println "Recording segment complete. Recorded" (int (/ (fs/size temp-file) 1024)) "kb.")
-          (when (fs/exists? temp-file)
-            (println "Transcribing...")
-            (if-let [text (transcribe-audio config temp-file)]
-              (let [text-with-emojis (if emojis (apply-emojis text) text)]
-                (println "Typing:" text-with-emojis)
-                (type-text config text-with-emojis)
-                (when (= (read-state) :active)
-                  (type-soft-newline)
-                  (type-soft-newline)))
-              (println "No text.")))
+          (let [size (int (/ (fs/size temp-file) 1024))]
+            (println "Recording segment complete. Recorded" size "kb.")
+            (when (and (fs/exists? temp-file) (pos? size))
+              (println "Transcribing...")
+              (if-let [text (transcribe-audio config temp-file)]
+                (let [text-with-emojis (if emojis (apply-emojis text) text)]
+                  (println "Typing:" text-with-emojis)
+                  (type-text config text-with-emojis)
+                  (when (= (read-state) :active)
+                    (type-soft-newline)
+                    (type-soft-newline)))
+                (println "No text."))))
 
           (catch Exception e
             (println "Error in recording loop:" (.getMessage e) e))
@@ -184,6 +185,7 @@ See the README for more details: https://github.com/200ok-ch/dictate
 
 (defn -main [args]
   (let [config (smith/config usage)]
+    (prn config)
     (cond
       (:service config)
       (start-service! config)
