@@ -183,9 +183,8 @@ See the README for more details: https://github.com/200ok-ch/dictate
     ;;(notify-cmd (str "Mode: " (name new-state) (when (#{:active} new-state) (str " " indicator))))
     ))
 
-(defn -main [args]
+(defn -main [& args]
   (let [config (smith/config usage)]
-    (prn config)
     (cond
       (:service config)
       (start-service! config)
@@ -197,4 +196,4 @@ See the README for more details: https://github.com/200ok-ch/dictate
       (println usage))))
 
 (when (= *file* (System/getProperty "babashka.file"))
-  (-main *command-line-args*))
+  (apply -main *command-line-args*))
