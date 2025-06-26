@@ -100,8 +100,10 @@ See the README for more details: https://github.com/200ok-ch/dictate
 (defn type-soft-newline []
   (p/shell "xdotool" "key" "shift+Return"))
 
+(def script-dir (fs/parent *file*))
+
 (def emojis
-  (->> (json/parse-string (slurp "emojis.min.json") true)
+  (->> (json/parse-string (slurp (str (fs/normalize (fs/path script-dir "emojis.min.json")))) true)
        :emojis
        (sort-by (comp count :name))
        reverse
@@ -138,7 +140,7 @@ See the README for more details: https://github.com/200ok-ch/dictate
               (p/destroy rproc))
             (deref rproc))
 
-          (println "Recording segment complete.")
+          (println "Recording segment complete. Recorded" (int (/ (fs/size temp-file) 1024)) "kb.")
           (when (fs/exists? temp-file)
             (println "Transcribing...")
             (if-let [text (transcribe-audio config temp-file)]
@@ -180,7 +182,7 @@ See the README for more details: https://github.com/200ok-ch/dictate
     ;;(notify-cmd (str "Mode: " (name new-state) (when (#{:active} new-state) (str " " indicator))))
     ))
 
-(defn main [args]
+(defn -main [args]
   (let [config (smith/config usage)]
     (cond
       (:service config)
@@ -193,4 +195,4 @@ See the README for more details: https://github.com/200ok-ch/dictate
       (println usage))))
 
 (when (= *file* (System/getProperty "babashka.file"))
-  (main *command-line-args*))
+  (-main *command-line-args*))
