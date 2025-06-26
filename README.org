@@ -45,6 +45,7 @@ dictate --service
 dictate --toggle
 
 # Show help
+dictate --help
 #+end_src
 
 *** Configuration Options
