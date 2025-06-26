@@ -117,14 +117,24 @@ This project is maintained by [[https://200ok.ch/][200ok GmbH]].
 You can customize Dictate's behavior by creating a =dictate.yml=
 configuration file in the *SAME* directory where you call =dictate=.
 
+The values in this example are also the defaults.
+
 Example:
 
 #+begin_src yaml
-api-key: "sk-..."                    # Your OpenAI API key
+# audio
 device: "default"                    # Audio input device (e.g., "default", "hw:1,0")
-delay: 5                             # Typing delay in milliseconds
-model: "gpt-4o-transcribe"           # Whisper model to use
-api-path: "/v1/audio/transcriptions" # API endpoint path
+# silence
+volume: 2                            # Maximum volume of silence in percentage
+duration: 1.5                        # Minimum duration of silence in secs
+# transcription
 api-root: "https://api.openai.com"   # API root URL
-kill-i3status: false                 # Whether to kill i3status during dictation
+api-path: "/v1/audio/transcriptions" # API endpoint path
+api-key: "sk-..."                    # Your OpenAI API key
+model: "gpt-4o-transcribe"           # Whisper model to use
+# typing
+delay: 25                            # Typing delay in milliseconds
+# misc
+i3status: false                      # Whether to reload i3status on toggle
+emojis: false                        # Dis-/enable emoji feature
 #+end_src

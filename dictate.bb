@@ -21,7 +21,7 @@ Options:
   -a --device=<device>      Device to record from [default: default]
   -d --delay=<delay>        Type delay in millisecs [default: 25]
   -h --help                 Show this help message
-  -m --model=<model>        Model [default: whisper-1]
+  -m --model=<model>        Model [default: gpt-4o-transcribe]
   -p --api-path=<api-path>  API path [default: /v1/audio/transcriptions]
   -r --api-root=<api-root>  API root [default: https://api.openai.com]
   -s --service              Run as background service process
@@ -29,7 +29,7 @@ Options:
   -v --volume=<colume>      Maximum volume of silence in percentage [default: 2]
   -t --duration=<duration>  Minimum duration of silence in secs [default: 1.5]
   -e --emojis               Enable emoji support.
-  -k --kill-i3status        Kill i3status when toggling (configurable via dictate.yml)
+  -i --i3status             Reload i3status when toggling [default: false]
 
 Examples:
   dictate --service                   Start service with default device
@@ -179,9 +179,9 @@ See the README for more details: https://github.com/200ok-ch/dictate
         new-state (if (= current-state :active) :inactive :active)]
     (write-state! new-state)
     (println (str "Dictate mode: " (name new-state)))
-    ;; force update i3status for the instant red bubble (if configured)
-    (when (:kill-i3status config)
-      (p/shell "killall -USR1 i3status"))
+    (when (:i3status config)
+      ;; force update i3status for the instant red bubble (if configured)
+      (p/shell {:continue true} "killall -USR1 i3status"))
     ;;(notify-cmd (str "Mode: " (name new-state) (when (#{:active} new-state) (str " " indicator))))
     ))
 
