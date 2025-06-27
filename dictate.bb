@@ -25,7 +25,7 @@ dictate - Background speech-to-text dictation tool
 
 Usage:
   dictate --service [options]
-  dictate --toggle
+  dictate --toggle [options]
   dictate -h | --help
 
 Options:
@@ -45,7 +45,7 @@ Options:
 Examples:
   dictate --service                   Start service with default device
   dictate --service --device=hw:1,0   Start service with specific device
-  dictate --toggle                    Toggle recording on/off
+  dictate --toggle --i3status         Toggle recording on/off with i3status update
 
 See the README for more details: https://github.com/200ok-ch/dictate
 ")
