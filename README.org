@@ -93,6 +93,21 @@ read_file dictate {
 }
 #+end_src
 
+
+*** polybar configuration
+
+Add this to your polybar config (~/.config/polybar/config.ini) for status bar integration:
+
+#+begin_src 
+type = custom/script
+exec = [ -f ~/.dictate.state ] && cat ~/.dictate.state
+interval = 1
+format = <label>
+label = %output%
+#+end_src
+
+
+
 ** State Management
 
 The tool uses a simple state file (=~/.dictate.state=) to track
