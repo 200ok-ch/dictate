@@ -61,7 +61,8 @@ See the README for more details: https://github.com/200ok-ch/dictate
    :keyboard          "\u2328\uFE0F"
    :skull-crossbones  "\u2620\uFE0F"
    :muted             "\uD83D\uDD07"
-   :rocket            "\uD83D\uDE80"})
+   :rocket            "\uD83D\uDE80"
+   :green-circle      "\uD83D\uDFE2"})
 
 (def state-file (str (System/getProperty "user.home") "/.dictate.state"))
 
@@ -70,13 +71,16 @@ See the README for more details: https://github.com/200ok-ch/dictate
 
 (defn write-state! [state]
   "Write the current state to the state file"
-  (spit state-file (if (= state :active) (:red-circle emoji) "")))
+  (spit state-file (if (= state :active) (:red-circle emoji) (:green-circle emoji))))
 
 (defn read-state []
   "Read the current state from the state file"
   (try
     (let [content (str/trim (slurp state-file))]
-      (if (= content (:red-circle emoji)) :active :inactive))
+      (cond
+        (= content (:red-circle emoji)) :active
+        (= content (:green-circle emoji)) :inactive
+        :else :inactive))
     (catch Exception _
       :inactive)))
 
@@ -149,21 +153,18 @@ See the README for more details: https://github.com/200ok-ch/dictate
 
 (defn recording-loop [{:keys [device volume duration emojis model] :as config}]
   "Main recording loop that runs while service is active with continuous recording"
-  (println (:red-circle emoji) "Dictate service started and currently paused.")
+  (println (:green-circle emoji) "Dictate service started and currently paused.")
   (println "Press Ctrl+C to stop or use --toggle to control.")
   (while true
     (when (= (read-state) :active)
       (let [temp-file (str "/tmp/dictate-" (System/currentTimeMillis) ".wav")]
         (try
           (println (:record-button emoji) "Recording segment...")
-          ;; TODO: respect device
-          (let [rproc (p/process {:continue true}
-                                 "rec" "-q" temp-file
-                                 "silence" "1" "0.1"
-                                 (str volume "%") "1"
-                                 (str duration) "1%"
-                                 "trim" "0" "60")]  ; Max 1 minute per segment
-            ;; Wait for the recording process to complete (silence detected or max time reached)
+          ;; Record using ffmpeg with PulseAudio input
+          (let [pulse-device (if (and device (not= device "default")) device "default")
+                rproc        (p/process {:continue true}
+                                        "ffmpeg" "-t" duration "-y" "-f" "pulse" "-i" pulse-device temp-file)]
+            ;; Wait for the recording process to complete (max time reached)
             (while (and (= (read-state) :active)
                         (p/alive? rproc))
               (Thread/sleep 250))
