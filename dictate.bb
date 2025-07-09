@@ -120,9 +120,14 @@ See the README for more details: https://github.com/200ok-ch/dictate
       nil)))
 
 (defn type-text [{:keys [delay]} text]
-  "Type the transcribed text using xdotool"
+  "Type the transcribed text using clipboard and xdotool paste"
   (when-not (str/blank? text)
-    (p/shell "xdotool" "type" "--delay" (str delay) text)))
+    ;; Copy text to clipboard using xclip
+    (p/shell {:in text} "xclip" "-selection" "clipboard")
+    ;; Small delay to ensure clipboard is set
+    (Thread/sleep 50)
+    ;; Paste from clipboard
+    (p/shell "xdotool" "key" "ctrl+v")))
 
 (defn type-soft-newline []
   (p/shell "xdotool" "key" "shift+Return"))
